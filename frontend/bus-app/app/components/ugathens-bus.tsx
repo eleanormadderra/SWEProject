@@ -3,7 +3,7 @@
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Menu } from "lucide-react";
-import Image from 'next/Image';
+import Image from 'next/image';
 import { useState } from "react";
 import banner from '../../public/map key.png';
 import Button from "./ui/Button";
