@@ -8,6 +8,7 @@ import { useState } from "react";
 import banner from '../../public/map key.png';
 import Button from "./ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/Card";
+import Map from "./ui/map";
 
 // Mock data for UGA bus stops
 const busStops = [
@@ -36,7 +37,7 @@ function UGAthensBusStops() {
                 <Button
                     variant="primary"
                     size="small"
-                    className=" md:hidden text-white" //can add md:hidden to get rid of it
+                    className=" md:hidden text-white"
                     onClick={() => setSidebarOpen(!sidebarOpen)}
                 >
                     <Menu className="h-6 w-6" />
@@ -69,18 +70,8 @@ function UGAthensBusStops() {
                         </ul>
                     </CardContent>
                 </Card>
-                <div className="flex-1 flex items-center justify-center">
-                    {selectedStop ? (
-                        <div className="text-center">
-                            <h2 className="text-3xl font-semibold text-red-500">{selectedStop.name}</h2>
-                            <p className="text-gray-300">{selectedStop.description}</p>
-                            <p className="text-gray-500 mt-2">
-                                Coordinates: {selectedStop.lat}, {selectedStop.lng}
-                            </p>
-                        </div>
-                    ) : (
-                        <p className="text-gray-500 text-lg">Select a bus stop to see details</p>
-                    )}
+                <div className="flex-1 relative">
+                    <Map busStops={busStops} selectedStop={selectedStop} setSelectedStop={setSelectedStop} />
                 </div>
             </div>
         </div>
