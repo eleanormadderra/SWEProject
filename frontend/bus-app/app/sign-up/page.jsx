@@ -2,11 +2,13 @@
 import React, { useState } from 'react';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "../firebase/config";
+import { useRouter } from 'next/navigation';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
+  const router = useRouter();
 
   const handleSignUp = async () => {
     try {
@@ -15,6 +17,7 @@ const SignUp = () => {
       sessionStorage.setItem('user', true);
       setEmail('');
       setPassword('');
+      router.push('/'); // Redirect to the homepage after successful sign-up
     } catch (e) {
       console.error(e);
     }
@@ -44,6 +47,19 @@ const SignUp = () => {
         >
           Sign Up
         </button>
+
+        {/* Already have an account? */}
+        <div className="mt-4 text-center">
+          <p className="text-white">
+            Already have an account?{' '}
+            <span 
+              onClick={() => router.push('/sign-in')} 
+              className="text-[#FFD700] cursor-pointer hover:underline"
+            >
+              Login
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

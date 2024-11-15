@@ -26,7 +26,7 @@ const SignIn = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#9E1B32]">
       <div className="bg-black p-10 rounded-lg shadow-xl w-96">
-        <h1 className="text-2xl mb-5 text-center font-bold text-white">Sign In</h1>
+        <h1 className="text-2xl mb-5 text-center font-bold text-white">Login</h1>
         <input 
           type="email" 
           placeholder="Email" 
@@ -45,7 +45,7 @@ const SignIn = () => {
           onClick={handleSignIn}
           className="w-full p-3 bg-[#9E1B32] rounded text-white hover:bg-[#9E1B32]/80"
         >
-          Sign In
+          Login
         </button>
       </div>
     </div>

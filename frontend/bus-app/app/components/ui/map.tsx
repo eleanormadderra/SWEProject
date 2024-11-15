@@ -1,7 +1,7 @@
-import { useRef, useEffect } from "react";
-import { Icon } from "leaflet";
+import L, { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { useEffect, useRef } from "react";
 
 // Custom icon for bus stops
 const busIcon = new Icon({
@@ -11,21 +11,18 @@ const busIcon = new Icon({
 });
 
 const Map = ({ busStops, selectedStop, setSelectedStop }) => {
-  const mapInitialized = useRef(false); // Track if map is initialized
+  const mapRef = useRef(null); // Store map instance
 
   useEffect(() => {
-    // Prevent re-initialization if the map is already initialized
-    if (mapInitialized.current) {
-      return; // Skip re-initialization if already initialized
+    if (mapRef.current) {
+      // If map instance already exists, invalidate the size to avoid errors
+      mapRef.current.invalidateSize();
     }
-
-    // Set the flag to indicate that map has been initialized
-    mapInitialized.current = true;
-
-  }, []); // Empty dependency array ensures it runs only once
+  }, [busStops]); // Only re-run when busStops change
 
   return (
     <MapContainer
+      id="map" // Ensure map container has an id for L.DomUtil to target
       center={[33.9550, -83.3751]} // Center of the map on UGA campus
       zoom={15}
       style={{ height: "100%", width: "100%" }}
