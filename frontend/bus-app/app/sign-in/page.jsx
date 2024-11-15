@@ -1,20 +1,23 @@
 'use client'
-import React, { useState } from 'react';
-import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useState } from 'react';
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "../firebase/config";
+import { useRouter } from 'next/navigation';
 
-const SignUp = () => {
+const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
-
-  const handleSignUp = async () => {
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const router = useRouter();
+  
+  const handleSignIn = async () => {
     try {
-      const res = await createUserWithEmailAndPassword(email, password);
+      const res = await signInWithEmailAndPassword(email, password);
       console.log({ res });
       sessionStorage.setItem('user', true);
       setEmail('');
       setPassword('');
+      router.push('/');
     } catch (e) {
       console.error(e);
     }
@@ -23,7 +26,7 @@ const SignUp = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#9E1B32]">
       <div className="bg-black p-10 rounded-lg shadow-xl w-96">
-        <h1 className="text-2xl mb-5 text-center font-bold text-white">Sign Up</h1>
+        <h1 className="text-2xl mb-5 text-center font-bold text-white">Sign In</h1>
         <input 
           type="email" 
           placeholder="Email" 
@@ -39,14 +42,14 @@ const SignUp = () => {
           className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
         />
         <button 
-          onClick={handleSignUp}
+          onClick={handleSignIn}
           className="w-full p-3 bg-[#9E1B32] rounded text-white hover:bg-[#9E1B32]/80"
         >
-          Sign Up
+          Sign In
         </button>
       </div>
     </div>
   );
 };
 
-export default SignUp;
+export default SignIn;
