@@ -12,19 +12,16 @@ export default function Home() {
 
   console.log({user})
  
-  if (!user && !userSession){
-    router.push('/sign-up')
-  }
+  // if (!user && !userSession){
+  //   router.push('/sign-up')
+  // }
 
   useEffect(() => {
-    if (!user) {
-      router.push('/sign-up');  // Redirect if no user is authenticated
-    }
+    // if (!user) {
+    //   router.push('/sign-up');  // Redirect if no user is authenticated
+    // }
   }, [user, router]);  // Only run the effect when the user state changes
   
-  if (!user) {
-    return <div>Loading...</div>;  // Render loading state while redirecting
-  }
 
   return (
     <>
