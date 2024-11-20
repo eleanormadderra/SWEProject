@@ -8,21 +8,30 @@ const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [signInWithEmailAndPassword, user, loading, errorMessage] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
 
   const handleSignIn = async () => {
+    setError(''); // Reset any previous errors
+
     try {
       const res = await signInWithEmailAndPassword(email, password);
-      console.log({ res });
-      sessionStorage.setItem('user', true);
-      setEmail('');
-      setPassword('');
-      setError(''); // Clear error on successful login
-      router.push('/');
+
+      if (res.user) {
+        sessionStorage.setItem('user', true);
+        setEmail('');
+        setPassword('');
+        router.push('/'); // Redirect to the homepage after successful sign-in
+      }
     } catch (e) {
       console.error(e);
-      setError('Incorrect email or password. Please try again.');
+
+      // Firebase error handling
+      if (e.code === 'auth/user-not-found') {
+        setError('No account found with that email address.');
+      } else {
+        setError('Something went wrong. Please check you email and password and try again.');
+      }
     }
   };
 
@@ -57,4 +66,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
