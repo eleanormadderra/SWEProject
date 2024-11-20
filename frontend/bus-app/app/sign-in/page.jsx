@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState } from 'react';
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "../firebase/config";
@@ -7,9 +7,10 @@ import { useRouter } from 'next/navigation';
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
-  
+
   const handleSignIn = async () => {
     try {
       const res = await signInWithEmailAndPassword(email, password);
@@ -17,9 +18,11 @@ const SignIn = () => {
       sessionStorage.setItem('user', true);
       setEmail('');
       setPassword('');
+      setError(''); // Clear error on successful login
       router.push('/');
     } catch (e) {
       console.error(e);
+      setError('Incorrect email or password. Please try again.');
     }
   };
 
@@ -47,9 +50,11 @@ const SignIn = () => {
         >
           Login
         </button>
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
       </div>
     </div>
   );
 };
 
 export default SignIn;
+
