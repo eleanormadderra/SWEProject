@@ -1,12 +1,11 @@
-"use client"
-import MainPage from '../components/ugathens-bus';
+// /pages/index.tsx
+import UGAthensBusStops from '../components/UGAthensBusStops';
 
-const Map = () => {
-    return(
-        <div>
-            <MainPage />
-        </div>
-    )
+export default function Home() {
+  return (
+    <div>
+      <h1>UGA Bus Stops Map</h1>
+      <UGAthensBusStops />
+    </div>
+  );
 }
-
-export default Map;

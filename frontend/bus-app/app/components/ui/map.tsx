@@ -1,47 +1,34 @@
-// Map.js
-import { Icon } from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
-// Custom icon for bus stops
-const busIcon = new Icon({
-    iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-});
+// Add prop types for bus stops
+type MapProps = {
+  busStops: {
+    id: number;
+    name: string;
+    lat: number;
+    lng: number;
+    description?: string;
+  }[];
+};
 
-// Component to display a Leaflet map
-const Map = ({ busStops, selectedStop, setSelectedStop }) => {
-    return (
-        <MapContainer
-            center={[33.9550, -83.3751]} // Center of the map on UGA campus
-            zoom={15}
-            style={{ height: "100%", width: "100%" }}
-        >
-            <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {busStops.map((stop) => (
-                <Marker
-                    key={stop.id}
-                    position={[stop.lat, stop.lng]}
-                    icon={busIcon}
-                    eventHandlers={{
-                        click: () => {
-                            setSelectedStop(stop);
-                        },
-                    }}
-                >
-                    <Popup>
-                        <strong>{stop.name}</strong>
-                        <br />
-                        {stop.description}
-                    </Popup>
-                </Marker>
-            ))}
-        </MapContainer>
-    );
+const Map = ({ busStops }: MapProps) => {
+  return (
+    <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""}>
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "100%" }}  // Ensure height is defined here
+        center={{ lat: 33.9519, lng: -83.3777 }} // Default to Athens, GA coordinates
+        zoom={14}
+      >
+        {busStops.map((stop) => (
+          <Marker
+            key={stop.id}
+            position={{ lat: stop.lat, lng: stop.lng }}
+            title={stop.name}
+          />
+        ))}
+      </GoogleMap>
+    </LoadScript>
+  );
 };
 
 export default Map;
