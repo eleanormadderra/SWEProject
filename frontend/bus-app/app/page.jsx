@@ -26,7 +26,7 @@ export default function Home() {
   return (
     // Will need to update this cause this is sloppy 
     <>
-      <button 
+      {/* <button 
         onClick={() => {
         //  signOut(auth); // ????
           sessionStorage.removeItem('user');
@@ -34,7 +34,7 @@ export default function Home() {
         }}
       >
         Log out
-      </button>
+      </button> */}
       <div>
         <MainPage /> 
       </div>
