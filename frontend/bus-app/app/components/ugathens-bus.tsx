@@ -30,8 +30,12 @@ type BusStop = {
 
 const UGAthensBusStops = () => {
   const [busStops, setBusStops] = useState<BusStop[]>([]);
+  const [filteredBusStops, setFilteredBusStops] = useState<BusStop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDistance, setSelectedDistance] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [darkMode, setDarkMode] = useState<boolean>(true);
 
   const convertToDate = (timeString: string): Date => {
     const [time, modifier] = timeString.split(' ');
@@ -58,7 +62,7 @@ const UGAthensBusStops = () => {
 
         const data: BusStop[] = await response.json();
 
-        // Process and sort bus stops by distance and next bus
+        // Process bus stops with details
         const busStopsWithDetails = data.map((stop) => {
           const busRoutes = stop.busRoutes || [];
 
@@ -72,9 +76,10 @@ const UGAthensBusStops = () => {
 
           // Find the next available bus
           const now = new Date();
-          const nextBus = sortedBusRoutes.find(
-            (route) => convertToDate(route.departureTime) > now
-          ) || null;
+          const nextBus =
+            sortedBusRoutes.find(
+              (route) => convertToDate(route.departureTime) > now
+            ) || null;
 
           return {
             ...stop,
@@ -89,14 +94,11 @@ const UGAthensBusStops = () => {
           };
         });
 
-        // Sort stops by distance
-        const sortedBusStops = busStopsWithDetails.sort(
-          (a, b) => (a.distance || 0) - (b.distance || 0)
-        );
-
-        setBusStops(sortedBusStops);
+        // Set all bus stops, including the ones that meet the distance filter
+        setBusStops(busStopsWithDetails);
+        setFilteredBusStops(busStopsWithDetails);
       } catch (error) {
-        console.error('Error fetching or sorting bus stops:', error);
+        console.error('Error fetching or processing bus stops:', error);
         setError('Failed to fetch or process bus stops');
       } finally {
         setLoading(false);
@@ -106,22 +108,103 @@ const UGAthensBusStops = () => {
     fetchAndSortBusStops();
   }, []);
 
+  useEffect(() => {
+    let filtered = busStops;
+
+    // Apply the distance filter
+    if (selectedDistance !== null) {
+      filtered = filtered.filter((stop) => stop.distance <= selectedDistance);
+    }
+
+    // Apply the search filter
+    if (searchQuery) {
+      filtered = filtered.filter((stop) =>
+        stop.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredBusStops(filtered);
+  }, [selectedDistance, searchQuery, busStops]);
+
+  const handleDistanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedDistance(value ? parseInt(value, 10) : null);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleLogout = () => {
+    // Logout logic (e.g., clearing session, redirecting to login page)
+    // Example of clearing cookies or sessionStorage
+    // sessionStorage.clear();
+    // localStorage.clear();
+    window.location.href = '/login'; // Redirect to login page after logout
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (busStops.length === 0) return <p>No bus stops available</p>;
+  if (filteredBusStops.length === 0) return <p>No bus stops available</p>;
 
   return (
-    <div className="flex flex-col h-screen bg-black text-white">
+    <div className={`flex flex-col h-screen ${darkMode ? 'bg-black' : 'bg-white'} text-white`}>
       <header className="bg-red-700 p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">UGAthens Bus Stops</h1>
-        <Button variant="primary" size="small" className="md:hidden text-white">
-          {/* Menu icon or other icon */}
-        </Button>
+        <div className="flex space-x-4 items-center">
+          {/* Light/Dark Mode Toggle */}
+          <Button
+            onClick={toggleDarkMode}
+            variant="primary"
+            className={`p-2 rounded-full ${darkMode ? 'bg-black' : 'bg-white'}`}
+          >
+            {darkMode ? 'Light Mode' : 'Dark Mode'}
+          </Button>
+
+          {/* Logout Button */}
+          <Button
+            onClick={handleLogout}
+            variant="secondary"
+            className="bg-gray-800 text-white px-4 py-2 rounded"
+          >
+            Logout
+          </Button>
+        </div>
       </header>
       <div className="flex flex-1 overflow-hidden p-4">
         <div className="w-full md:w-1/4 min-w-[250px] max-w-[300px] h-full overflow-auto">
           <div className="space-y-4">
-            {busStops.map((stop) => (
+            {/* Search Bar */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Search for bus stops..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="bg-gray-800 text-white p-2 rounded w-full"
+              />
+            </div>
+
+            {/* Distance filter */}
+            <div className="mb-4">
+              <select
+                onChange={handleDistanceChange}
+                className="bg-gray-800 text-white p-2 rounded"
+              >
+                <option value="">Select Distance</option>
+                <option value="1">1 km</option>
+                <option value="5">5 km</option>
+                <option value="10">10 km</option>
+                <option value="20">20 km</option>
+              </select>
+            </div>
+
+            {/* Bus Stops List */}
+            {filteredBusStops.map((stop) => (
               <Card key={stop.id} className="bg-gray-800 text-white">
                 <CardHeader>
                   <CardTitle className="text-red-500">{stop.name}</CardTitle>
@@ -147,26 +230,13 @@ const UGAthensBusStops = () => {
                   ) : (
                     <p className="text-gray-500">No upcoming buses available</p>
                   )}
-                  {stop.busRoutes.length > 0 ? (
-                    <ul className="mt-2 text-sm text-gray-300">
-                      {stop.busRoutes.map((route, index) => (
-                        <li key={index}>
-                          <strong>Bus Name:</strong> {route.busName} <br />
-                          <strong>Departure:</strong> {route.departureTime} <br />
-                          <strong>Arrival:</strong> {route.arrivalTime} <br />
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-500">No bus routes available</p>
-                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
         <div className="flex-1 relative">
-          <Map busStops={busStops} />
+          <Map busStops={filteredBusStops} />
         </div>
       </div>
     </div>
@@ -174,3 +244,5 @@ const UGAthensBusStops = () => {
 };
 
 export default UGAthensBusStops;
+
+
