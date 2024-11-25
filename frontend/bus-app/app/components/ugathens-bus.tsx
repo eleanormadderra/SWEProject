@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { getUserLocation, haversineDistance } from '../../utils/utils';
+import Button from './ui/Button';
 import {
   Card,
   CardContent,
@@ -6,9 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/Card';
-import Button from './ui/Button';
+import LoadingPage from './ui/LoadingPage';
 import Map from './ui/map';
-import { haversineDistance, getUserLocation } from '../../utils/utils';
 
 type BusRoute = {
   busName: string;
@@ -36,6 +37,9 @@ const UGAthensBusStops = () => {
   const [selectedDistance, setSelectedDistance] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [showAbout, setShowAbout] = useState(false);
+  const [mobile, setMobile] = useState(false);
+
 
   const convertToDate = (timeString: string): Date => {
     const [time, modifier] = timeString.split(' ');
@@ -46,6 +50,7 @@ const UGAthensBusStops = () => {
 
     return new Date(1970, 0, 1, hours, minutes);
   };
+  const toggleAboutPopup = () => setShowAbout(!showAbout);
 
   useEffect(() => {
     const fetchAndSortBusStops = async () => {
@@ -124,6 +129,17 @@ const UGAthensBusStops = () => {
     }
 
     setFilteredBusStops(filtered);
+
+    const updateMobile = () => setMobile(window.innerWidth < 599);
+
+    // Call once to set initial state based on current window width
+    updateMobile();
+
+    // Setup event listener for resizing the window
+    window.addEventListener('resize', updateMobile);
+
+    // Cleanup the event listener when the component unmounts
+    return () => window.removeEventListener('resize', updateMobile);
   }, [selectedDistance, searchQuery, busStops]);
 
   const handleDistanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -144,23 +160,28 @@ const UGAthensBusStops = () => {
     // Example of clearing cookies or sessionStorage
     // sessionStorage.clear();
     // localStorage.clear();
-    window.location.href = '/login'; // Redirect to login page after logout
+    window.location.href = '/sign-up'; // Redirect to login page after logout
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingPage />;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (filteredBusStops.length === 0) return <p>No bus stops available</p>;
+  if (filteredBusStops.length === 0) return <p>No bus stops available 😭</p>;
 
   return (
     <div className={`flex flex-col h-screen ${darkMode ? 'bg-black' : 'bg-white'} text-white`}>
       <header className="bg-red-700 p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">UGAthens Bus Stops</h1>
         <div className="flex space-x-4 items-center">
+          {/* <Link> */}
+          <Button onClick={toggleAboutPopup} className="text-white">
+            About Us
+          </Button>
+          {/* </Link> */}
           {/* Light/Dark Mode Toggle */}
           <Button
             onClick={toggleDarkMode}
             variant="primary"
-            className={`p-2 rounded-full ${darkMode ? 'bg-black' : 'bg-white'}`}
+            className={`p-2 rounded-full ${darkMode ? 'bg-gray-400' : 'bg-gray-800'}`}
           >
             {darkMode ? 'Light Mode' : 'Dark Mode'}
           </Button>
@@ -175,6 +196,38 @@ const UGAthensBusStops = () => {
           </Button>
         </div>
       </header>
+      {showAbout && (
+        <div
+          className={`fixed inset-0 bg-opacity-50 flex items-center justify-center z-50`}
+          onClick={toggleAboutPopup}
+        >
+          <div
+            className={`bg-white text-black dark:bg-gray-800 dark:text-white p-6 rounded-lg shadow-lg w-1/2`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="md:text-sm lg:text-md xl:text-lg">
+              <h2 className=" font-bold mb-4">About Us</h2>
+              <p className=" leading-relaxed">
+                Welcome to UGAthens Bus Stops! Our mission is to provide the most accurate and up-to-date
+                information about bus stops around the University of Georgia campus. Whether you're a student
+                rushing to class, a staff member heading to work, or a visitor exploring our beautiful campus,
+                we are here to make your commute as seamless as possible.
+              </p>
+              {!mobile ?
+
+                <p className="leading-relaxed mt-4">Our team is dedicated to leveraging technology and user-friendly design to enhance your
+                  transportation experience. With features like real-time updates, route planning, and live
+                  tracking, we aim to be the ultimate companion for your campus travels. Thank you for choosing UGAthens Bus Stops. Together, let&apos;s move forward efficiently and effectively!</p>
+                : ''
+              }
+
+              <Button onClick={toggleAboutPopup} className="mt-4 bg-red-600 text-white px-4 py-2 rounded">
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-1 overflow-hidden p-4">
         <div className="w-full md:w-1/4 min-w-[250px] max-w-[300px] h-full overflow-auto">
           <div className="space-y-4">
