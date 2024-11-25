@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "../firebase/config";
@@ -7,19 +7,43 @@ import { useRouter } from 'next/navigation';
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
   const router = useRouter();
 
+  // Validate email format
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  // Validate password strength
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const handleSignUp = async () => {
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    if (!validatePassword(password)) {
+      setError('Password must contain at least one uppercase letter, one lowercase letter, and one special character.');
+      return;
+    }
+
     try {
       const res = await createUserWithEmailAndPassword(email, password);
       console.log({ res });
       sessionStorage.setItem('user', true);
       setEmail('');
       setPassword('');
+      setError(''); // Clear error message on success
       router.push('/'); // Redirect to the homepage after successful sign-up
     } catch (e) {
       console.error(e);
+      setError('Failed to create an account. Please try again.');
     }
   };
 
@@ -47,6 +71,7 @@ const SignUp = () => {
         >
           Sign Up
         </button>
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
         {/* Already have an account? */}
         <div className="mt-4 text-center">
@@ -66,3 +91,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+

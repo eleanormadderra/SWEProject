@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState } from 'react';
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "../firebase/config";
@@ -7,19 +7,31 @@ import { useRouter } from 'next/navigation';
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [error, setError] = useState('');
+  const [signInWithEmailAndPassword, user, loading, errorMessage] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
-  
+
   const handleSignIn = async () => {
+    setError(''); // Reset any previous errors
+
     try {
       const res = await signInWithEmailAndPassword(email, password);
-      console.log({ res });
-      sessionStorage.setItem('user', true);
-      setEmail('');
-      setPassword('');
-      router.push('/');
+
+      if (res.user) {
+        sessionStorage.setItem('user', true);
+        setEmail('');
+        setPassword('');
+        router.push('/'); // Redirect to the homepage after successful sign-in
+      }
     } catch (e) {
       console.error(e);
+
+      // Firebase error handling
+      if (e.code === 'auth/user-not-found') {
+        setError('No account found with that email address.');
+      } else {
+        setError('Something went wrong. Please check you email and password and try again.');
+      }
     }
   };
 
@@ -47,6 +59,7 @@ const SignIn = () => {
         >
           Login
         </button>
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
       </div>
     </div>
   );
