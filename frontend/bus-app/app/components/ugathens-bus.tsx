@@ -1,3 +1,4 @@
+import Link from 'next/Link';
 import React, { useEffect, useState } from 'react';
 import { getUserLocation, haversineDistance } from '../../utils/utils';
 import Button from './ui/Button';
@@ -156,10 +157,6 @@ const UGAthensBusStops = () => {
   };
 
   const handleLogout = () => {
-    // Logout logic (e.g., clearing session, redirecting to login page)
-    // Example of clearing cookies or sessionStorage
-    // sessionStorage.clear();
-    // localStorage.clear();
     window.location.href = '/sign-up'; // Redirect to login page after logout
   };
 
@@ -173,6 +170,9 @@ const UGAthensBusStops = () => {
         <h1 className="text-2xl font-bold">UGAthens Bus Stops</h1>
         <div className="flex space-x-4 items-center">
           {/* <Link> */}
+          <Link href="mailto:ryan.majd@uga.edu?subject=UGAthens Bus Stops" className="text-gray-200 font-bold">
+            Contact Us
+          </Link>
           <Button onClick={toggleAboutPopup} className="text-white">
             About Us
           </Button>
@@ -202,7 +202,7 @@ const UGAthensBusStops = () => {
           onClick={toggleAboutPopup}
         >
           <div
-            className={`bg-white text-black dark:bg-gray-800 dark:text-white p-6 rounded-lg shadow-lg w-1/2`}
+            className={` ${darkMode ? 'text-black dark:bg-gray-800 dark:text-white' : 'bg-white text-black'} p-6 rounded-lg shadow-lg w-1/2`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="md:text-sm lg:text-md xl:text-lg">
@@ -238,15 +238,15 @@ const UGAthensBusStops = () => {
                 placeholder="Search for bus stops..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="bg-gray-800 text-white p-2 rounded w-full"
+                className={`p-2 rounded w-full ${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}
               />
             </div>
 
             {/* Distance filter */}
-            <div className="mb-4">
+            <div className={`mb-4 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black'}`}>
               <select
                 onChange={handleDistanceChange}
-                className="bg-gray-800 text-white p-2 rounded"
+                className={`p-2 rounded w-full ${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}
               >
                 <option value="">Select Distance</option>
                 <option value="1">1 km</option>
@@ -258,7 +258,7 @@ const UGAthensBusStops = () => {
 
             {/* Bus Stops List */}
             {filteredBusStops.map((stop) => (
-              <Card key={stop.id} className="bg-gray-800 text-white">
+              <Card key={stop.id} className={`${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}>
                 <CardHeader>
                   <CardTitle className="text-red-500">{stop.name}</CardTitle>
                   <p className="text-gray-400 text-sm">{stop.busName}</p>
@@ -288,7 +288,7 @@ const UGAthensBusStops = () => {
             ))}
           </div>
         </div>
-        <div className="flex-1 relative">
+        <div className="flex-1 relative pl-4">
           <Map busStops={filteredBusStops} />
         </div>
       </div>
