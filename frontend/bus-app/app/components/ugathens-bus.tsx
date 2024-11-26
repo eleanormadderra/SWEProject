@@ -1,5 +1,8 @@
 import Link from 'next/Link';
+<<<<<<< HEAD
 import React, { useEffect, useState, useCallback } from 'react';
+=======
+>>>>>>> 4245d6a (allah pls)
 import React, { useCallback, useEffect, useState } from 'react';
 import { getUserLocation, haversineDistance } from '../../utils/utils';
 
@@ -25,6 +28,7 @@ type DepartureTime = {
 type TransitInfo = {
   line: string;
   departureTime: DepartureTime;
+<<<<<<< HEAD
 type DepartureTime = {
     text: string;
     time_zone: string;
@@ -33,11 +37,16 @@ type DepartureTime = {
 type TransitInfo = {
   line: string;
   departureTime: DepartureTime;
+=======
+>>>>>>> 4245d6a (allah pls)
 };
 
 type BusStop = {
   id: string;
+<<<<<<< HEAD
   id: string;
+=======
+>>>>>>> 4245d6a (allah pls)
   name: string;
   busName: string;
   lat: number;
@@ -75,6 +84,7 @@ const convertToDate = (departureTime?: DepartureTime): Date | null => {
 
 const UGAthensBusStops: React.FC = () => {
   // State Management
+<<<<<<< HEAD
   transitInfo: TransitInfo[];
   distance ?: number;
 };
@@ -104,6 +114,8 @@ const convertToDate = (departureTime?: DepartureTime): Date | null => {
   }
 };
 const UGAthensBusStops: React.FC = () => {
+=======
+>>>>>>> 4245d6a (allah pls)
   const [busStops, setBusStops] = useState<BusStop[]>([]);
   const [filteredBusStops, setFilteredBusStops] = useState<BusStop[]>([]);
   const [loading, setLoading] = useState(true);
@@ -171,6 +183,7 @@ const UGAthensBusStops: React.FC = () => {
 
           return aDate.getTime() - bDate.getTime();
         });
+<<<<<<< HEAD
 
       setBusStops(processedBusStops);
       setFilteredBusStops(processedBusStops);
@@ -348,6 +361,53 @@ const UGAthensBusStops: React.FC = () => {
     const toggleDarkMode = () => setDarkMode(!darkMode);
     const handleLogout = () => window.location.href = '/sign-up';
   }, [fetchBusStops]);
+=======
+
+      setBusStops(processedBusStops);
+      setFilteredBusStops(processedBusStops);
+    } catch (error) {
+      console.error('Error fetching bus stops:', error);
+      setError('Failed to fetch bus stops');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Filtering Effect
+  useEffect(() => {
+    let filtered = busStops;
+
+    // Apply distance filter
+    if (selectedDistance !== null) {
+      filtered = filtered.filter((stop) =>
+        stop.distance !== undefined && stop.distance <= selectedDistance
+      );
+    }
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter((stop) =>
+        stop.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredBusStops(filtered);
+  }, [selectedDistance, searchQuery, busStops]);
+
+  // Mobile Detection and Initial Data Fetch
+  useEffect(() => {
+    fetchBusStops();
+
+    const updateMobile = () => setMobile(window.innerWidth < 599);
+    updateMobile();
+
+    window.addEventListener('resize', updateMobile);
+    return () => window.removeEventListener('resize', updateMobile);
+  }, [fetchBusStops]);
+
+  // Event Handlers
+  const toggleAboutPopup = () => setShowAbout(!showAbout);
+>>>>>>> 4245d6a (allah pls)
 
   const handleDistanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
@@ -498,6 +558,7 @@ const UGAthensBusStops: React.FC = () => {
                 </Card>
               ))}
             </div>
+<<<<<<< HEAD
             <CardContent>
               {stop.transitInfo.length > 0 ? (
                 <ul>
@@ -524,6 +585,12 @@ const UGAthensBusStops: React.FC = () => {
             </CardContent>
           </Card>
             ))}
+=======
+          </div>
+        </div>
+        <div className="flex-1 relative pl-4">
+          <Map busStops={filteredBusStops} />
+>>>>>>> 4245d6a (allah pls)
         </div>
       </div>
       <div className="flex-1 relative pl-4">

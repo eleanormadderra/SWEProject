@@ -1,5 +1,9 @@
 import { Client, TravelMode } from '@googlemaps/google-maps-services-js';
 import { NextApiRequest, NextApiResponse } from 'next';
+<<<<<<< HEAD
+=======
+import { Client, TravelMode } from '@googlemaps/google-maps-services-js';
+>>>>>>> 4245d6a (allah pls)
 
 // Initialize Google Maps API client
 const client = new Client({});
@@ -54,6 +58,7 @@ const getTransitDirections = async (origin: string, destination: string) => {
 
 
 // Main handler for the API route
+<<<<<<< HEAD
 // Function to get transit directions
 // Function to get transit directions
 const getTransitDirections = async (origin: string, destination: string) => {
@@ -101,14 +106,21 @@ const getTransitDirections = async (origin: string, destination: string) => {
 
 
 // Main handler for the API route
+=======
+>>>>>>> 4245d6a (allah pls)
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const location = req.query.location || 'Athens, GA';
     console.log('Location:', location);
+<<<<<<< HEAD
     console.log('Location:', location);
 
     // Step 1: Geocode the location (dynamic based on the query or default)
     // Step 1: Geocode the location (dynamic based on the query or default)
+=======
+
+    // Step 1: Geocode the location (dynamic based on the query or default)
+>>>>>>> 4245d6a (allah pls)
     const geocodeResponse = await client.geocode({
       params: {
         address: location as string,
@@ -121,8 +133,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 
       // Step 2: Use Google Places API to search for bus stops within a 10-mile radius
+<<<<<<< HEAD
 
       // Step 2: Use Google Places API to search for bus stops within a 10-mile radius
+=======
+>>>>>>> 4245d6a (allah pls)
       const placesResponse = await client.placesNearby({
         params: {
           location: `${lat},${lng}`,
@@ -158,6 +173,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Display final results in terminal
         console.log('Transit Details for Bus Stops:', transitDetails);
+<<<<<<< HEAD
         }));
 
         // Display bus stops in terminal
@@ -181,6 +197,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(transitDetails);
         // Return the bus stops and transit info as a JSON response
         res.status(200).json(transitDetails);
+=======
+
+        // Return the bus stops and transit info as a JSON response
+        res.status(200).json(transitDetails);
+>>>>>>> 4245d6a (allah pls)
       } else {
         res.status(500).json({ error: 'Failed to fetch bus stops from Google Maps API' });
       }
