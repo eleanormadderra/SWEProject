@@ -1,9 +1,5 @@
 import { Client, TravelMode } from '@googlemaps/google-maps-services-js';
 import { NextApiRequest, NextApiResponse } from 'next';
-<<<<<<< HEAD
-=======
-import { Client, TravelMode } from '@googlemaps/google-maps-services-js';
->>>>>>> 4245d6a (allah pls)
 
 // Initialize Google Maps API client
 const client = new Client({});
@@ -58,69 +54,12 @@ const getTransitDirections = async (origin: string, destination: string) => {
 
 
 // Main handler for the API route
-<<<<<<< HEAD
-// Function to get transit directions
-// Function to get transit directions
-const getTransitDirections = async (origin: string, destination: string) => {
-  try {
-    const response = await client.directions({
-      params: {
-        origin: origin, 
-        destination: destination, 
-        mode: TravelMode.transit, 
-        departure_time: 'now', 
-        key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-      },
-    });
-
-    if (response.data.status === 'OK') {
-      const legs = response.data.routes[0].legs;
-
-      // Extract transit information with all the required details
-      const transitInfo = legs.flatMap((leg) => 
-        leg.steps
-          .filter((step) => step.transit_details)
-          .map((step) => {
-            const transitDetail = step.transit_details;
-
-            return {
-              line: transitDetail.line.name,  // Bus or line name
-              departureTime: {
-                text: transitDetail.departure_time.text,  // Text of departure time
-                time_zone: transitDetail.departure_time.time_zone,  // Time zone
-                value: transitDetail.departure_time.value,  // Departure timestamp (epoch)
-              }
-            };
-          })
-      );
-      return transitInfo; 
-    } else {
-      console.error('No transit information available');
-      return [];
-    }
-  } catch (error) {
-    console.error('Error fetching transit directions:', error);
-    return [];
-  }
-};
-
-
-// Main handler for the API route
-=======
->>>>>>> 4245d6a (allah pls)
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const location = req.query.location || 'Athens, GA';
     console.log('Location:', location);
-<<<<<<< HEAD
-    console.log('Location:', location);
 
     // Step 1: Geocode the location (dynamic based on the query or default)
-    // Step 1: Geocode the location (dynamic based on the query or default)
-=======
-
-    // Step 1: Geocode the location (dynamic based on the query or default)
->>>>>>> 4245d6a (allah pls)
     const geocodeResponse = await client.geocode({
       params: {
         address: location as string,
@@ -133,11 +72,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 
       // Step 2: Use Google Places API to search for bus stops within a 10-mile radius
-<<<<<<< HEAD
-
-      // Step 2: Use Google Places API to search for bus stops within a 10-mile radius
-=======
->>>>>>> 4245d6a (allah pls)
       const placesResponse = await client.placesNearby({
         params: {
           location: `${lat},${lng}`,
@@ -173,35 +107,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Display final results in terminal
         console.log('Transit Details for Bus Stops:', transitDetails);
-<<<<<<< HEAD
-        }));
-
-        // Display bus stops in terminal
-        console.log('Found Bus Stops:', busStops);
-
-        // Now, get transit information for each bus stop (assuming the origin is the location we geocoded)
-        const transitDetails = await Promise.all(
-          busStops.map(async (stop) => {
-            const transitInfo = await getTransitDirections(location as string, `${stop.lat},${stop.lng}`);
-            return {
-              ...stop,
-              transitInfo,  // Include all the detailed transit info here
-            };
-          })
-        );
-
-        // Display final results in terminal
-        console.log('Transit Details for Bus Stops:', transitDetails);
 
         // Return the bus stops and transit info as a JSON response
         res.status(200).json(transitDetails);
-        // Return the bus stops and transit info as a JSON response
-        res.status(200).json(transitDetails);
-=======
-
-        // Return the bus stops and transit info as a JSON response
-        res.status(200).json(transitDetails);
->>>>>>> 4245d6a (allah pls)
       } else {
         res.status(500).json({ error: 'Failed to fetch bus stops from Google Maps API' });
       }
