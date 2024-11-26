@@ -1,3 +1,4 @@
+import Link from 'next/Link';
 import React, { useEffect, useState, useCallback } from 'react';
 import { getUserLocation, haversineDistance } from '../../utils/utils';
 
@@ -188,7 +189,15 @@ const UGAthensBusStops: React.FC = () => {
     setSearchQuery(event.target.value);
   };
 
-  // Render Loading or Error States
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleLogout = () => {
+    window.location.href = '/sign-up'; // Redirect to login page after logout
+  };
+
   if (loading) return <LoadingPage />;
   if (error) return <p className="text-red-500">{error}</p>;
   if (filteredBusStops.length === 0) return <p>No bus stops available 😭</p>;
@@ -199,6 +208,11 @@ const UGAthensBusStops: React.FC = () => {
       <header className="bg-red-700 p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">UGAthens Bus Stops</h1>
         <div className="flex space-x-4 items-center">
+
+          {/* <Link> */}
+          <Link href="mailto:ryan.majd@uga.edu?subject=UGAthens Bus Stops" className="text-gray-200 font-bold">
+            Contact Us
+          </Link>
           <Button onClick={toggleAboutPopup} className="text-white">
             About Us
           </Button>
@@ -226,7 +240,7 @@ const UGAthensBusStops: React.FC = () => {
           onClick={toggleAboutPopup}
         >
           <div
-            className="bg-white text-black dark:bg-gray-800 dark:text-white p-6 rounded-lg shadow-lg w-1/2"
+            className={` ${darkMode ? 'text-black dark:bg-gray-800 dark:text-white' : 'bg-white text-black'} p-6 rounded-lg shadow-lg w-1/2`}
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-bold mb-4">About Us</h2>
@@ -261,15 +275,15 @@ const UGAthensBusStops: React.FC = () => {
                 placeholder="Search for bus stops..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="bg-gray-800 text-white p-2 rounded w-full"
+                className={`p-2 rounded w-full ${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}
               />
             </div>
 
             {/* Distance filter */}
-            <div className="mb-4">
+            <div className={`mb-4 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black'}`}>
               <select
                 onChange={handleDistanceChange}
-                className="bg-gray-800 text-white p-2 rounded"
+                className={`p-2 rounded w-full ${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}
               >
                 <option value="">Select Distance</option>
                 <option value="1">1 km</option>
@@ -282,8 +296,8 @@ const UGAthensBusStops: React.FC = () => {
             {/* Bus Stops List */}
             <div>
               <h3 className="text-lg font-semibold">Bus Stops</h3>
-              {filteredBusStops.map((stop) => (
-                <Card key={stop.id} className="bg-gray-800 text-white">
+            {filteredBusStops.map((stop) => (
+              <Card key={stop.id} className={`${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}>
                 <CardHeader>
                   <CardTitle className="text-red-500">{stop.name}</CardTitle>
                   <p className="text-gray-400 text-sm">{stop.busName}</p>
@@ -317,10 +331,8 @@ const UGAthensBusStops: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Map */}
-        <div className="w-full md:w-3/4 h-full">
-          <Map busStops={filteredBusStops} darkMode={darkMode} />
+        <div className="flex-1 relative pl-4">
+          <Map busStops={filteredBusStops} />
         </div>
       </div>
     </div>
