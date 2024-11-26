@@ -1,5 +1,6 @@
 import Link from 'next/Link';
 import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getUserLocation, haversineDistance } from '../../utils/utils';
 
 // UI Components
@@ -24,9 +25,18 @@ type DepartureTime = {
 type TransitInfo = {
   line: string;
   departureTime: DepartureTime;
+type DepartureTime = {
+    text: string;
+    time_zone: string;
+    value: number;
+  };
+type TransitInfo = {
+  line: string;
+  departureTime: DepartureTime;
 };
 
 type BusStop = {
+  id: string;
   id: string;
   name: string;
   busName: string;
@@ -40,11 +50,11 @@ type BusStop = {
 // Utility Functions
 const convertToDate = (departureTime?: DepartureTime): Date | null => {
   if (!departureTime || !departureTime.text) return null;
-  
+
   try {
     const [time, period] = departureTime.text.split(/\s+/);
     const [hours, minutes] = time.split(':').map(Number);
-    
+
     let adjustedHours = hours;
     if (period) {
       if (period.toLowerCase() === 'pm' && hours !== 12) {
@@ -53,7 +63,7 @@ const convertToDate = (departureTime?: DepartureTime): Date | null => {
         adjustedHours = 0;
       }
     }
-    
+
     const date = new Date();
     date.setHours(adjustedHours, minutes || 0, 0, 0);
     return date;
@@ -65,15 +75,44 @@ const convertToDate = (departureTime?: DepartureTime): Date | null => {
 
 const UGAthensBusStops: React.FC = () => {
   // State Management
+  transitInfo: TransitInfo[];
+  distance ?: number;
+};
+// Utility Functions
+const convertToDate = (departureTime?: DepartureTime): Date | null => {
+  if (!departureTime || !departureTime.text) return null;
+
+  try {
+    const [time, period] = departureTime.text.split(/\s+/);
+    const [hours, minutes] = time.split(':').map(Number);
+
+    let adjustedHours = hours;
+    if (period) {
+      if (period.toLowerCase() === 'pm' && hours !== 12) {
+        adjustedHours += 12;
+      } else if (period.toLowerCase() === 'am' && hours === 12) {
+        adjustedHours = 0;
+      }
+    }
+
+    const date = new Date();
+    date.setHours(adjustedHours, minutes || 0, 0, 0);
+    return date;
+  } catch (error) {
+    console.error('Error parsing date:', error);
+    return null;
+  }
+};
+const UGAthensBusStops: React.FC = () => {
   const [busStops, setBusStops] = useState<BusStop[]>([]);
   const [filteredBusStops, setFilteredBusStops] = useState<BusStop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filter States
   const [selectedDistance, setSelectedDistance] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
+
   // UI States
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [showAbout, setShowAbout] = useState(false);
@@ -119,19 +158,19 @@ const UGAthensBusStops: React.FC = () => {
           )
         };
       })
-      // Sort processed bus stops by earliest departure time
-      .sort((a, b) => {
-        const aTime = a.transitInfo[0]?.departureTime;
-        const bTime = b.transitInfo[0]?.departureTime;
-        
-        const aDate = convertToDate(aTime);
-        const bDate = convertToDate(bTime);
+        // Sort processed bus stops by earliest departure time
+        .sort((a, b) => {
+          const aTime = a.transitInfo[0]?.departureTime;
+          const bTime = b.transitInfo[0]?.departureTime;
 
-        if (!aDate) return 1;
-        if (!bDate) return -1;
+          const aDate = convertToDate(aTime);
+          const bDate = convertToDate(bTime);
 
-        return aDate.getTime() - bDate.getTime();
-      });
+          if (!aDate) return 1;
+          if (!bDate) return -1;
+
+          return aDate.getTime() - bDate.getTime();
+        });
 
       setBusStops(processedBusStops);
       setFilteredBusStops(processedBusStops);
@@ -141,44 +180,174 @@ const UGAthensBusStops: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
 
-  // Filtering Effect
-  useEffect(() => {
-    let filtered = busStops;
+    // const convertToDate = (timeString: string): Date => {
+    //   const [time, modifier] = timeString.split(' ');
+    //   let [hours, minutes] = time.split(':').map(Number);
 
-    // Apply distance filter
-    if (selectedDistance !== null) {
-      filtered = filtered.filter((stop) => 
-        stop.distance !== undefined && stop.distance <= selectedDistance
-      );
-    }
+    //   if (modifier === 'PM' && hours !== 12) hours += 12;
+    //   else if (modifier === 'AM' && hours === 12) hours = 0;
 
-    // Apply search filter
-    if (searchQuery) {
-      filtered = filtered.filter((stop) =>
-        stop.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+    //   return new Date(1970, 0, 1, hours, minutes);
+    // };
+    const toggleAboutPopup = () => setShowAbout(!showAbout);
 
-    setFilteredBusStops(filtered);
-  }, [selectedDistance, searchQuery, busStops]);
+    // useEffect(() => {
+    //   const fetchAndSortBusStops = async () => {
+    //     try {
+    //       setLoading(true);
 
-  // Mobile Detection and Initial Data Fetch
-  useEffect(() => {
-    fetchBusStops();
+    //       // Fetch user location
+    //       const userLocation = await getUserLocation();
+    //       console.log('User Location:', userLocation);
 
-    const updateMobile = () => setMobile(window.innerWidth < 599);
-    updateMobile();
+    //       // Fetch bus stops from the API
+    //       const response = await fetch('/api/busstops');
+    //       if (!response.ok) throw new Error('Failed to fetch bus stops');
 
-    window.addEventListener('resize', updateMobile);
-    return () => window.removeEventListener('resize', updateMobile);
+    //       const data: BusStop[] = await response.json();
+
+    //       // Process bus stops with details
+    //       const busStopsWithDetails = data.map((stop) => {
+    //         const busRoutes = stop.busRoutes || [];
+
+    //         // Sort bus routes by departure time
+    //         const sortedBusRoutes = busRoutes
+    //           .filter((route) => route.departureTime)
+    //           .sort((a, b) =>
+    //             convertToDate(a.departureTime).getTime() -
+    //             convertToDate(b.departureTime).getTime()
+    //           );
+
+    //         // Find the next available bus
+    //         const now = new Date();
+    //         const nextBus =
+    //           sortedBusRoutes.find(
+    //             (route) => convertToDate(route.departureTime) > now
+    //           ) || null;
+
+    //         return {
+    //           ...stop,
+    //           distance: haversineDistance(
+    //             userLocation.latitude,
+    //             userLocation.longitude,
+    //             stop.lat,
+    //             stop.lng
+    //           ),
+    //           nextBus,
+    //           busRoutes: sortedBusRoutes,
+    //         };
+    //       });
+
+    //       // Set all bus stops, including the ones that meet the distance filter
+    //       setBusStops(busStopsWithDetails);
+    //       setFilteredBusStops(busStopsWithDetails);
+    //     } catch (error) {
+    //       console.error('Error fetching or processing bus stops:', error);
+    //       setError('Failed to fetch or process bus stops');
+    //     } finally {
+    //       setLoading(false);
+    //     }
+    //   };
+
+    //   fetchAndSortBusStops();
+    const fetchBusStops = useCallback(async () => {
+      try {
+        setLoading(true);
+        // Fetch user location
+        const userLocation = await getUserLocation();
+        // Fetch bus stops from the API
+        const response = await fetch('/api/busstops');
+        if (!response.ok) throw new Error('Failed to fetch bus stops');
+        const data: BusStop[] = await response.json();
+        // Process bus stops
+        const processedBusStops = data.map((stop) => {
+          // Sort transit info by departure time
+          const sortedTransitInfo = stop.transitInfo
+            .sort((a, b) => {
+              const aDate = convertToDate(a.departureTime);
+              const bDate = convertToDate(b.departureTime);
+              // Handle invalid dates
+              if (!aDate) return 1;
+              if (!bDate) return -1;
+              return aDate.getTime() - bDate.getTime();
+            });
+          return {
+            ...stop,
+            transitInfo: sortedTransitInfo,
+            distance: haversineDistance(
+              userLocation.latitude,
+              userLocation.longitude,
+              stop.lat,
+              stop.lng
+            )
+          };
+        })
+          // Sort processed bus stops by earliest departure time
+          .sort((a, b) => {
+            const aTime = a.transitInfo[0]?.departureTime;
+            const bTime = b.transitInfo[0]?.departureTime;
+
+            const aDate = convertToDate(aTime);
+            const bDate = convertToDate(bTime);
+            if (!aDate) return 1;
+            if (!bDate) return -1;
+            return aDate.getTime() - bDate.getTime();
+          });
+        setBusStops(processedBusStops);
+        setFilteredBusStops(processedBusStops);
+      } catch (error) {
+        console.error('Error fetching bus stops:', error);
+        setError('Failed to fetch bus stops');
+      } finally {
+        setLoading(false);
+      }
+    }, []);
+
+    // Filtering Effect
+    useEffect(() => {
+      let filtered = busStops;
+
+      // Apply distance filter
+      if (selectedDistance !== null) {
+        filtered = filtered.filter((stop) =>
+          stop.distance !== undefined && stop.distance <= selectedDistance
+        );
+        filtered = filtered.filter((stop) =>
+          stop.distance !== undefined && stop.distance <= selectedDistance
+        );
+      }
+
+      // Apply search filter
+      if (searchQuery) {
+        filtered = filtered.filter((stop) =>
+          stop.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      setFilteredBusStops(filtered);
+    }, [selectedDistance, searchQuery, busStops]);
+
+    // Mobile Detection and Initial Data Fetch
+    useEffect(() => {
+      fetchBusStops();
+    }, [selectedDistance, searchQuery, busStops]);
+
+    useEffect(() => {
+      fetchBusStops();
+      const updateMobile = () => setMobile(window.innerWidth < 599);
+      updateMobile();
+
+      // Setup event listener for resizing the window
+      window.addEventListener('resize', updateMobile);
+      return () => window.removeEventListener('resize', updateMobile);
+    }, [fetchBusStops]);
+
+    // Event Handlers
+    const toggleAboutPopup = () => setShowAbout(!showAbout);
+    const toggleDarkMode = () => setDarkMode(!darkMode);
+    const handleLogout = () => window.location.href = '/sign-up';
   }, [fetchBusStops]);
-
-  // Event Handlers
-  const toggleAboutPopup = () => setShowAbout(!showAbout);
-  const toggleDarkMode = () => setDarkMode(!darkMode);
-  const handleLogout = () => window.location.href = '/sign-up';
 
   const handleDistanceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
@@ -245,17 +414,17 @@ const UGAthensBusStops: React.FC = () => {
           >
             <h2 className="font-bold mb-4">About Us</h2>
             <p className="leading-relaxed">
-              Welcome to UGAthens Bus Stops! Our mission is to provide the most accurate 
+              Welcome to UGAthens Bus Stops! Our mission is to provide the most accurate
               and up-to-date information about bus stops around the University of Georgia campus.
             </p>
             {!mobile && (
               <p className="leading-relaxed mt-4">
-                We provide real-time updates, route planning, and live tracking to enhance 
+                We provide real-time updates, route planning, and live tracking to enhance
                 your transportation experience.
               </p>
             )}
-            <Button 
-              onClick={toggleAboutPopup} 
+            <Button
+              onClick={toggleAboutPopup}
               className="mt-4 bg-red-600 text-white px-4 py-2 rounded"
             >
               Close
@@ -265,7 +434,7 @@ const UGAthensBusStops: React.FC = () => {
       )}
 
       {/* Main Content */}
-       <div className="flex flex-1 overflow-hidden p-4">
+      <div className="flex flex-1 overflow-hidden p-4">
         <div className="w-full md:w-1/4 min-w-[250px] max-w-[300px] h-full overflow-auto">
           <div className="space-y-4">
             {/* Search Bar */}
@@ -296,12 +465,12 @@ const UGAthensBusStops: React.FC = () => {
             {/* Bus Stops List */}
             <div>
               <h3 className="text-lg font-semibold">Bus Stops</h3>
-            {filteredBusStops.map((stop) => (
-              <Card key={stop.id} className={`${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}>
-                <CardHeader>
-                  <CardTitle className="text-red-500">{stop.name}</CardTitle>
-                  <p className="text-gray-400 text-sm">{stop.busName}</p>
-                </CardHeader>
+              {filteredBusStops.map((stop) => (
+                <Card key={stop.id} className={`${darkMode ? 'bg-gray-800 text-white' : 'bg-white-900 text-black border-2 border-black'}`}>
+                  <CardHeader>
+                    <CardTitle className="text-red-500">{stop.name}</CardTitle>
+                    <p className="text-gray-400 text-sm">{stop.busName}</p>
+                  </CardHeader>
                   <CardContent>
                     {stop.transitInfo.length > 0 ? (
                       <ul>
@@ -309,7 +478,7 @@ const UGAthensBusStops: React.FC = () => {
                           <li key={index} className="mb-2 flex justify-between">
                             <span className="font-medium">{route.line}</span>
                             <span>
-                              {route.departureTime.text} 
+                              {route.departureTime.text}
                               <span className="text-xs text-gray-500 ml-2">
                                 {route.departureTime.text}
                               </span>
@@ -329,13 +498,39 @@ const UGAthensBusStops: React.FC = () => {
                 </Card>
               ))}
             </div>
-          </div>
-        </div>
-        <div className="flex-1 relative pl-4">
-          <Map busStops={filteredBusStops} />
+            <CardContent>
+              {stop.transitInfo.length > 0 ? (
+                <ul>
+                  {stop.transitInfo.map((route, index) => (
+                    <li key={index} className="mb-2 flex justify-between">
+                      <span className="font-medium">{route.line}</span>
+                      <span>
+                        {route.departureTime.text}
+                        <span className="text-xs text-gray-500 ml-2">
+                          {route.departureTime.text}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500">No transit information available</p>
+              )}
+              {stop.distance !== undefined && (
+                <div className="mt-2 text-sm text-gray-600">
+                  Distance: {stop.distance.toFixed(2)} meters
+                </div>
+              )}
+            </CardContent>
+          </Card>
+            ))}
         </div>
       </div>
+      <div className="flex-1 relative pl-4">
+        <Map busStops={filteredBusStops} darkMode={darkMode} />
+      </div>
     </div>
+    </div >
   );
 };
 
