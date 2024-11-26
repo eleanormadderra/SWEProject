@@ -3,12 +3,13 @@ import React, { useEffect, useState } from "react";
 
 type MapProps = {
     busStops: {
-        id: number;
+        id: string;
         name: string;
         lat: number;
         lng: number;
         description?: string;
     }[];
+    darkMode: boolean;
 };
 
 const doSomething = () => {
