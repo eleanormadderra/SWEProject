@@ -1,8 +1,21 @@
+/**
+ * SignUp component allows users to create a new account using their email and password.
+ * It validates the email format and password strength before attempting to create the account.
+ * On successful sign-up, it redirects the user to the homepage.
+ *
+ * @component
+ * @example
+ * return (
+ *   <SignUp />
+ * )
+ *
+ * @returns {JSX.Element} The SignUp component.
+ */
 'use client';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "../firebase/config";
-import { useRouter } from 'next/navigation';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');

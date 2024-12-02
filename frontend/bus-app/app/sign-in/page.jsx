@@ -1,8 +1,20 @@
+/**
+ * SignIn component allows users to sign in using their email and password.
+ * It uses Firebase authentication and Next.js router for navigation.
+ *
+ * @component
+ * @example
+ * return (
+ *   <SignIn />
+ * )
+ *
+ * @returns {JSX.Element} The rendered SignIn component.
+ */
 'use client';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "../firebase/config";
-import { useRouter } from 'next/navigation';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');

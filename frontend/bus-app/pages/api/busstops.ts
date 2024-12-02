@@ -54,6 +54,23 @@ const getTransitDirections = async (origin: string, destination: string) => {
 
 
 // Main handler for the API route
+/**
+ * API handler to fetch bus stops and transit information based on a given location.
+ * 
+ * This function performs the following steps:
+ * 1. Geocodes the provided location (or defaults to 'Athens, GA').
+ * 2. Uses the Google Places API to search for bus stops within a 10-mile radius of the geocoded location.
+ * 3. Maps the found bus stops to a simpler format.
+ * 4. Fetches detailed transit information for each bus stop.
+ * 5. Returns the bus stops and transit information as a JSON response.
+ * 
+ * @param req - The Next.js API request object.
+ * @param res - The Next.js API response object.
+ * 
+ * @returns A JSON response containing bus stops and their transit information.
+ * 
+ * @throws Will return a 500 status code if any step in the process fails.
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const location = req.query.location || 'Athens, GA';

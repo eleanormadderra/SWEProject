@@ -1,3 +1,64 @@
+/**
+ * UGAthensBusStops component fetches and displays bus stops around the University of Georgia campus.
+ * It allows users to filter bus stops by distance and search query, and provides real-time updates
+ * on bus stop information including transit routes and departure times.
+ *
+ * @component
+ * @example
+ * return (
+ *   <UGAthensBusStops />
+ * )
+ *
+ * @typedef {Object} DepartureTime
+ * @property {string} text - The departure time in text format.
+ * @property {string} time_zone - The time zone of the departure time.
+ * @property {number} value - The departure time in milliseconds since the Unix Epoch.
+ *
+ * @typedef {Object} TransitInfo
+ * @property {string} line - The bus line.
+ * @property {DepartureTime} departureTime - The departure time information.
+ *
+ * @typedef {Object} BusStop
+ * @property {string} id - The unique identifier of the bus stop.
+ * @property {string} name - The name of the bus stop.
+ * @property {string} busName - The name of the bus.
+ * @property {number} lat - The latitude of the bus stop.
+ * @property {number} lng - The longitude of the bus stop.
+ * @property {string} [description] - The description of the bus stop.
+ * @property {TransitInfo[]} transitInfo - The transit information for the bus stop.
+ * @property {number} [distance] - The distance from the user's location to the bus stop.
+ *
+ * @typedef {Object} UserLocation
+ * @property {number} latitude - The latitude of the user's location.
+ * @property {number} longitude - The longitude of the user's location.
+ *
+ * @function convertToDate
+ * @description Converts a DepartureTime object to a Date object.
+ * @param {DepartureTime} [departureTime] - The departure time to convert.
+ * @returns {Date | null} The converted Date object or null if conversion fails.
+ *
+ * @function fetchBusStops
+ * @description Fetches bus stops from the API, processes them, and updates the state.
+ *
+ * @function toggleAboutPopup
+ * @description Toggles the visibility of the About Us popup.
+ *
+ * @function handleDistanceChange
+ * @description Handles changes to the distance filter.
+ * @param {React.ChangeEvent<HTMLSelectElement>} event - The change event from the distance filter select element.
+ *
+ * @function handleSearchChange
+ * @description Handles changes to the search query input.
+ * @param {React.ChangeEvent<HTMLInputElement>} event - The change event from the search query input element.
+ *
+ * @function toggleDarkMode
+ * @description Toggles the dark mode state.
+ *
+ * @function handleLogout
+ * @description Handles user logout and redirects to the login page.
+ *
+ * @returns {JSX.Element} The rendered UGAthensBusStops component.
+ */
 import Link from 'next/Link';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getUserLocation, haversineDistance } from '../../utils/utils';

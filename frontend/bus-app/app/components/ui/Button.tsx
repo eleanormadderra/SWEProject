@@ -1,3 +1,17 @@
+/**
+ * Button component that supports different variants, sizes, and link functionality.
+ *
+ * @param {ButtonProps} props - The properties for the Button component.
+ * @param {"primary" | "secondary" | "ghost" | "link"} [props.variant="primary"] - The variant of the button.
+ * @param {"small" | "medium" | "large"} [props.size="medium"] - The size of the button.
+ * @param {string} [props.href] - The URL for link buttons.
+ * @param {() => void} [props.onClick] - The click event handler for the button.
+ * @param {React.ReactNode} props.children - The content of the button.
+ * @param {string} [props.className=""] - Additional class names for the button.
+ * @param {React.ButtonHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>} props - Additional props for the button.
+ *
+ * @returns {JSX.Element} The rendered button component.
+ */
 import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement | HTMLAnchorElement> {

@@ -1,3 +1,20 @@
+/**
+ * Home component that handles user authentication and redirects.
+ * 
+ * This component uses Firebase authentication to check if a user is logged in.
+ * If no user is authenticated, it redirects to the sign-up page.
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered component.
+ * 
+ * @remarks
+ * This component uses the `useAuthState` hook from `react-firebase-hooks/auth` to get the current user.
+ * It also uses the `useRouter` hook from `next/navigation` to handle navigation.
+ * 
+ * @todo
+ * - Update and put the authentication check as a separate component.
+ * - Improve the layout and structure of the returned JSX.
+ */
 'use client'
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

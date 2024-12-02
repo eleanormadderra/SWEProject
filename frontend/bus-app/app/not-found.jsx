@@ -1,3 +1,21 @@
+/**
+ * NotFound @component renders a 404 error page with a header, an "About Us" popup, and a link to navigate back home.
+ * 
+ * @returns {JSX.Element} The rendered NotFound component.
+ * 
+ * @description
+ * The NotFound component displays a 404 error message when a page is not found. It includes a header with a button to toggle the "About Us" popup. The popup provides information about the UGAthens Bus Stops service. The component also adjusts its layout based on the window width to provide a responsive design.
+ * 
+ * @function
+ * @name NotFound
+ * 
+ * @property {boolean} showAbout - State to control the visibility of the "About Us" popup.
+ * @property {function} setShowAbout - Function to update the showAbout state.
+ * @property {boolean} mobile - State to determine if the view is on a mobile device.
+ * @property {function} setMobile - Function to update the mobile state.
+ * 
+ * @hook useEffect - Hook to add and clean up the window resize event listener.
+ */
 'use client'
 import Link from "next/link";
 import { default as React, useEffect, useState } from 'react';

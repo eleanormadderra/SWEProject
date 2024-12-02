@@ -1,3 +1,11 @@
+/**
+ * LoadingPage component renders a full-screen loading spinner.
+ * 
+ * This component displays a centered spinner with a rotating animation,
+ * indicating that a loading process is ongoing.
+ * 
+ * @returns {JSX.Element} The rendered loading spinner component.
+ */
 import React from 'react';
 
 const LoadingPage: React.FC = () => {
