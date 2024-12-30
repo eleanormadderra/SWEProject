@@ -1,6 +1,6 @@
 # UGAthens Transit
 
-## Desription:
+## Description:
 
 As students, traveling across campus and throughout Athens is something we do daily. The Athens and UGA Transit systems offer a free and convenient alternative for those without cars as well as those who prefer to avoid the hassle of driving and parking on and off campus. Securing a parking spot on campus is both expensive and very competitive, so taking advantage of free public transportation is a great option for those who live off campus. <br>
 One of the biggest challenges of utilizing public transportation in Athens is understanding and managing the different bus routes and stops. While both the Athens and UGA Transit tracking websites are helpful, needing to switch between the two when trying to find the most efficient route to take can be both overwhelming and time-consuming. <br>
