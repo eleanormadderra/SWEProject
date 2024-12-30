@@ -13,6 +13,8 @@ This team defines project goals to be:
 - Ability for users to select a stop and see all routes that stop there
 - Ability for users to login via SSO and save favorite bus routes and stops
 
+Check Documentation folder for all documentation files. 
+
 ## UML Diagram:
 
 ![UML Diagram](UML_Diagram.drawio.svg)
